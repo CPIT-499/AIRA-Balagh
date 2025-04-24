@@ -1,0 +1,22 @@
+.status-badge {
+  /* Common badge styling will go here */
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-badge.open {
+  /* Styling for open status */
+  background-color: #ffebcd;
+  color: #ff8c00;
+}
+
+.status-badge.resolved {
+  /* Styling for resolved status */
+  background-color: #e8f5e9;
+  color: #4caf50;
+}
+
+/* Additional status styles will be added later */

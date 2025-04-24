@@ -1,0 +1,29 @@
+.action-button {
+  /* Common button styling */
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.action-button.default {
+  /* Default button styling */
+  background-color: #2196F3;
+  color: white;
+}
+
+.action-button.success {
+  /* Success button styling */
+  background-color: #4caf50;
+  color: white;
+}
+
+.action-button.danger {
+  /* Danger/delete button styling */
+  background-color: #f44336;
+  color: white;
+}
+
+/* Additional button styles will be added later */
