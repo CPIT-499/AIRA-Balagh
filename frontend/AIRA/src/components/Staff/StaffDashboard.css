@@ -1,5 +1,24 @@
 .dashboard-container {
-  /* Styles for the dashboard container will go here */
+  display: flex;
+  min-height: calc(100vh - 64px); /* Account for header height */
+  background-color: #F5F7F9;
+  width: 100%; /* Ensure full width */
 }
 
-/* Additional dashboard styles will be added later */
+.dashboard-content {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+  width: 100%; /* Ensure content takes full width */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .dashboard-container {
+    flex-direction: column;
+  }
+  
+  .dashboard-content {
+    padding: 16px;
+  }
+}

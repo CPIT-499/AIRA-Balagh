@@ -1,70 +1,75 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Login.css';
 import ActionButton from '../Common/ActionButton';
+import './Login.css';
 
-function Login() {
+function Login({ onLogin }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setIsLoading(true);
     
-    // Basic validation
-    if (!username.trim() || !password.trim()) {
-      setError('Please enter both username and password');
-      return;
-    }
-    
-    // Here you would normally authenticate against your backend
-    // For demo purposes, we'll use a simple check
-    if (username === 'admin' && password === 'admin123') {
-      // Store auth state (in a real app, use proper auth tokens)
-      localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('userRole', 'staff');
-      
-      // Redirect to staff dashboard
-      navigate('/staff');
-    } else {
-      setError('Invalid username or password');
+    try {
+      const result = await onLogin({ username, password });
+      if (result.success) {
+        navigate('/dashboard');
+      } else {
+        setError(result.error || 'Login failed. Please try again.');
+      }
+    } catch (err) {
+      setError('An unexpected error occurred. Please try again.');
+      console.error('Login error:', err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="login-container">
-      <div className="login-form">
-        <h2>Login to AIRA</h2>
+      <div className="login-card">
+        <div className="login-header">Login to AIRA</div>
         
-        {error && <div className="login-error">{error}</div>}
-        
-        <form onSubmit={handleSubmit}>
+        <form className="login-form" onSubmit={handleSubmit}>
+          {error && <div className="login-error">{error}</div>}
+          
           <div className="form-group">
             <label htmlFor="username">Username</label>
             <input
-              type="text"
               id="username"
+              type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="Enter your username"
+              required
+              className="form-input"
             />
           </div>
           
           <div className="form-group">
             <label htmlFor="password">Password</label>
             <input
-              type="password"
               id="password"
+              type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
+              required
+              className="form-input"
             />
           </div>
           
-          <div className="form-actions">
-            <ActionButton text="Login" type="default" />
-          </div>
+          <ActionButton 
+            text={isLoading ? "Logging in..." : "Login"}
+            type="primary"
+            onClick={() => {}}
+            disabled={isLoading}
+          />
         </form>
       </div>
     </div>

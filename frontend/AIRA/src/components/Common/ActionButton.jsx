@@ -1,13 +1,31 @@
 import './ActionButton.css';
 
-function ActionButton({ text, type, onClick }) {
-  // Component logic will be implemented later
+function ActionButton({ 
+  text, 
+  type = 'default', 
+  size = 'medium', 
+  onClick, 
+  icon = null,
+  isLoading = false,
+  disabled = false,
+  className = ''
+}) {
+  const buttonClasses = `action-button ${type} ${size} ${className} ${isLoading ? 'loading' : ''}`;
+  
   return (
     <button 
-      className={`action-button ${type || 'default'}`} 
+      className={buttonClasses} 
       onClick={onClick}
+      disabled={disabled || isLoading}
     >
-      {text}
+      {isLoading ? (
+        <span className="loading-spinner"></span>
+      ) : (
+        <>
+          {icon && <span className="button-icon">{icon}</span>}
+          {text}
+        </>
+      )}
     </button>
   );
 }

@@ -1,83 +1,44 @@
-# AIRA Components Structure
+# AIRA Components
 
-## 1. Flow of Application
+## Application Flow
 
-- **User Flow**: 
-  - Homepage → Submit message → AI analyzes content → Routes to department → Success confirmation
-  - No authentication required for message submission
-  - Message stored with pending status until processed
+**User Flow**: Submit message → AI routes to department → Confirmation  
+**Staff Flow**: Login → View/resolve tickets → Manage departments
 
-- **Staff Flow**: 
-  - Login (admin/admin123) → Dashboard shows department-specific tickets
-  - Open tab: View pending tickets → Resolve when completed
-  - Resolved tab: Review past tickets → Filter/search if needed
-  - Departments tab: Create/edit/remove departments
+## Components & Props
 
-## 2. Component Relationships
+### Auth
+- **Login**: `onLogin`, `isLoading`, `error`
 
-- **Auth Components**
-  - `Login.jsx`: Staff authentication
+### User
+- **MessageForm**: `departments`, `onSubmit`, `isSubmitting`, `submitSuccess`, `error`
 
-- **User Components**
-  - `MessageForm.jsx`: Entry point for ticket creation
+### Staff
+- **StaffDashboard**: `loggedInUser`, `tickets`, `departments`, `onResolveTicket`, `onAddDepartment`, `onEditDepartment`, `onDeleteDepartment`, `onLogout`
+- **Sidebar**: `activeTab`, `onTabChange`, `pendingCount`
+- **TicketsTable**: `tickets`, `isLoading`, `onResolve`, `filter`, `onFilterChange`
 
-- **Staff Components**
-  - `StaffDashboard.jsx`: Container component
-  - `Sidebar.jsx`: Navigation between views
-  - `TicketsTable.jsx`: Displays ticket data
+### Department
+- **DepartmentManager**: `departments`, `onAdd`, `onEdit`, `onDelete`
+- **DepartmentForm**: `department`, `onSubmit`, `onCancel`, `isSubmitting`, `error`
 
-- **Department Components**
-  - `DepartmentManager.jsx`: Container for department management
-  - `DepartmentForm.jsx`: Add/edit departments
+### Common
+- **Header**: `isAuthenticated`, `onLogout`, `username`
+- **StatusBadge**: `status`, `className`
+- **ActionButton**: `onClick`, `text`, `type`, `size`, `icon`, `isLoading`, `disabled`, `className`
 
-- **Common Components**
-  - `StatusBadge.jsx`: Used in `TicketsTable` for status display
-  - `ActionButton.jsx`: Reusable buttons for all actions
+## Layout Summary
 
-## 3. UI Layout
+- **Header**: Full-width navigation bar with authentication-conditional controls
+- **User View**: Centered form with message input and department selection
+- **Staff View**: Two-column layout (sidebar + main content)
+- **Dashboard**: Tabbed interface for open tickets, resolved tickets, department management
+- **Tables**: Responsive design with filter controls and action buttons
 
-- **Header**: 
-  - Appears on all pages with "AIRA - AI Routing Assistant" title in blue (#2196F3)
-  - Navigation links to right side (User Form, Staff Dashboard, Departments)
-  - Auth-aware navigation shows Login or Logout based on auth state
+## Color Scheme
 
-- **Login View**: 
-  - Centered white card with drop shadow, max-width 400px
-  - Blue header "Login to AIRA"
-  - Username and password fields with labels
-  - Blue login button
-  - Red error message appears on failed login
-  - Credentials: admin/admin123
-
-- **User View**: 
-  - Simple, focused form with clean background
-  - Large text area for message input
-  - Department selection dropdown
-  - Submit button with clear call-to-action
-  - Success notification appears after submission
-  - Mobile-friendly layout
-
-- **Staff View**: 
-  - Two-column layout (20% sidebar, 80% content)
-  - Left sidebar with tab navigation:
-    - Blue highlight for active tab
-    - Tabs for: Open Tickets, Resolved Tickets, Departments
-  - Main content area with:
-    - Ticket table with striped rows for readability
-    - Columns: ID, Message (truncated with ellipsis), Department, Date, Status, Actions
-    - "View" and "Resolve" action buttons
-    - Status badges (orange for open, green for resolved)
-
-- **Department View**:
-  - Clean table listing all departments
-  - Columns: Department Name, Description, Actions
-  - Action buttons for Edit/Delete operations
-  - "Add New Department" button above table
-  - Form slides in/appears when adding/editing
-
-- **Responsive Behavior**:
-  - Desktop: Full two-column layout for staff views
-  - Tablet: Adjusted column widths, maintained layout
-  - Mobile: Collapsing sidebar into dropdown menu
-
-Color scheme: Blue primary (#2196F3), Green for success (#4CAF50), Orange for pending (#FF9800), Red for errors/delete (#F44336), Light gray backgrounds (#F5F7F9)
+- **Primary**: Blue #2196F3
+- **Success**: Green #4CAF50
+- **Warning**: Orange #FF9800
+- **Error**: Red #F44336
+- **Neutral**: Light bg #F5F7F9, Border #E0E0E0, Text #333333/#757575

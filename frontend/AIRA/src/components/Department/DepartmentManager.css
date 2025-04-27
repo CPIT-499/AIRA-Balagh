@@ -1,5 +1,111 @@
 .department-manager-container {
-  /* Styles for the department manager container will go here */
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  overflow: hidden;
 }
 
-/* Additional department management styles will be added later */
+.department-header {
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #E0E0E0;
+}
+
+.department-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333333;
+  margin: 0;
+}
+
+.departments-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.departments-table th {
+  text-align: left;
+  padding: 12px 16px;
+  background-color: #F5F7F9;
+  font-weight: 600;
+  color: #333333;
+  border-bottom: 1px solid #E0E0E0;
+}
+
+.departments-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #E0E0E0;
+  color: #333333;
+}
+
+.departments-table tr:nth-child(even) {
+  background-color: #FAFAFA;
+}
+
+.departments-table tr:hover {
+  background-color: rgba(33, 150, 243, 0.05);
+}
+
+.actions-cell {
+  white-space: nowrap;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.empty-state {
+  padding: 40px;
+  text-align: center;
+  color: #757575;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+/* Modal styles */
+.confirmation-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.confirmation-content {
+  background-color: #ffffff;
+  padding: 24px;
+  border-radius: 8px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.confirmation-content h3 {
+  margin-top: 0;
+  color: #333333;
+}
+
+.confirmation-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+@media (max-width: 768px) {
+  .department-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}

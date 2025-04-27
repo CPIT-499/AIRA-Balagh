@@ -1,5 +1,88 @@
-.sidebar-container {
-  /* Styles for the sidebar container will go here */
+.sidebar {
+  width: 250px;
+  min-width: 200px;
+  flex-shrink: 0; /* Prevent sidebar from shrinking */
+  background-color: #F5F7F9;
+  border-right: 1px solid #E0E0E0;
+  padding: 24px 0;
+  height: calc(100vh - 64px); /* Account for header height */
+  overflow-y: auto;
 }
 
-/* Additional sidebar navigation styles will be added later */
+.sidebar-title {
+  padding: 0 24px 16px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333333;
+  border-bottom: 1px solid #E0E0E0;
+  margin-bottom: 16px;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-tab {
+  display: flex;
+  align-items: center;
+  padding: 12px 24px;
+  text-align: left;
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: #333333;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border-left: 3px solid transparent;
+}
+
+.sidebar-tab:hover {
+  background-color: rgba(33, 150, 243, 0.08);
+}
+
+.sidebar-tab.active {
+  background-color: rgba(33, 150, 243, 0.12);
+  border-left-color: #2196F3;
+  color: #2196F3;
+  font-weight: 500;
+}
+
+.tab-badge {
+  background-color: #FF9800;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  margin-left: 8px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    max-width: none;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid #E0E0E0;
+    padding: 16px 0;
+  }
+
+  .sidebar-nav {
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 0 16px;
+  }
+
+  .sidebar-tab {
+    padding: 8px 16px;
+    white-space: nowrap;
+    border-left: none;
+    border-bottom: 3px solid transparent;
+  }
+
+  .sidebar-tab.active {
+    border-left-color: transparent;
+    border-bottom-color: #2196F3;
+  }
+}

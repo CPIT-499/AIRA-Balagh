@@ -1,9 +1,8 @@
 import './StatusBadge.css';
 
-function StatusBadge({ status }) {
-  // Component logic will be implemented later
+function StatusBadge({ status, className = '' }) {
   return (
-    <span className={`status-badge ${status}`}>
+    <span className={`status-badge ${status} ${className}`}>
       {status}
     </span>
   );

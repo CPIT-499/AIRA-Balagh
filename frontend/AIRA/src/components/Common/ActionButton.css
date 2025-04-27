@@ -1,29 +1,111 @@
 .action-button {
-  /* Common button styling */
-  padding: 8px 16px;
-  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 4px;
-  cursor: pointer;
   font-weight: 500;
-  transition: background-color 0.2s;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  outline: none;
+  white-space: nowrap;
 }
 
-.action-button.default {
-  /* Default button styling */
+/* Button types */
+.action-button.primary {
   background-color: #2196F3;
   color: white;
+  border: 1px solid #2196F3;
 }
 
-.action-button.success {
-  /* Success button styling */
-  background-color: #4caf50;
-  color: white;
+.action-button.primary:hover:not(:disabled) {
+  background-color: #1976D2;
+  border-color: #1976D2;
+}
+
+.action-button.secondary {
+  background-color: transparent;
+  color: #757575;
+  border: 1px solid #E0E0E0;
+}
+
+.action-button.secondary:hover:not(:disabled) {
+  background-color: #F5F7F9;
+  color: #333333;
 }
 
 .action-button.danger {
-  /* Danger/delete button styling */
-  background-color: #f44336;
+  background-color: #F44336;
   color: white;
+  border: 1px solid #F44336;
 }
 
-/* Additional button styles will be added later */
+.action-button.danger:hover:not(:disabled) {
+  background-color: #D32F2F;
+  border-color: #D32F2F;
+}
+
+.action-button.default {
+  background-color: #E0E0E0;
+  color: #333333;
+  border: 1px solid #E0E0E0;
+}
+
+.action-button.default:hover:not(:disabled) {
+  background-color: #BDBDBD;
+}
+
+/* Button sizes */
+.action-button.small {
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+.action-button.medium {
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+.action-button.large {
+  padding: 12px 24px;
+  font-size: 16px;
+}
+
+/* Disabled state */
+.action-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Loading state */
+.action-button.loading {
+  position: relative;
+  color: transparent;
+}
+
+.loading-spinner {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 0.8s linear infinite;
+}
+
+.action-button.secondary .loading-spinner {
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  border-top-color: #333333;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Icon styling */
+.button-icon {
+  display: inline-flex;
+  margin-right: 8px;
+}
