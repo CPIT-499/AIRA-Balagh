@@ -14,8 +14,17 @@ import StaffDashboard from './components/Staff/StaffDashboard'
 // Common Components
 import Header from './components/Common/Header'
 
-// API Base URL
-const API_BASE_URL = 'http://localhost:4000/api';
+// API Functions
+import {
+  fetchTickets,
+  fetchDepartments,
+  login,
+  submitMessage,
+  resolveTicket,
+  addDepartment,
+  editDepartment,
+  deleteDepartment
+} from './api';
 
 function App() {
   // Authentication state
@@ -40,22 +49,22 @@ function App() {
   // Fetch initial data when user is authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      fetchTickets();
-      fetchDepartments();
+      fetchInitialData();
     }
   }, [isAuthenticated]);
 
+  // Fetch initial data
+  const fetchInitialData = async () => {
+    await fetchTicketsData();
+    await fetchDepartmentsData();
+  }
+
   // Fetch tickets from API
-  const fetchTickets = async () => {
+  const fetchTicketsData = async () => {
     setIsLoadingData(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/tickets`);
-      if (response.ok) {
-        const data = await response.json();
-        setTickets(data);
-      } else {
-        console.error('Failed to fetch tickets');
-      }
+      const data = await fetchTickets();
+      setTickets(data);
     } catch (error) {
       console.error('Error fetching tickets:', error);
     } finally {
@@ -64,16 +73,11 @@ function App() {
   };
 
   // Fetch departments from API
-  const fetchDepartments = async () => {
+  const fetchDepartmentsData = async () => {
     setIsLoadingData(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/departments`);
-      if (response.ok) {
-        const data = await response.json();
-        setDepartments(data);
-      } else {
-        console.error('Failed to fetch departments');
-      }
+      const data = await fetchDepartments();
+      setDepartments(data);
     } catch (error) {
       console.error('Error fetching departments:', error);
     } finally {
@@ -85,25 +89,17 @@ function App() {
   const handleLogin = async (credentials) => {
     setIsLoadingData(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(credentials),
-      });
+      const { success, user, error } = await login(credentials);
       
-      const data = await response.json();
-      
-      if (response.ok && data.success) {
+      if (success) {
         setIsAuthenticated(true);
-        setLoggedInUser(data.user);
-        localStorage.setItem('user', JSON.stringify(data.user));
+        setLoggedInUser(user);
+        localStorage.setItem('user', JSON.stringify(user));
         return { success: true };
       } else {
         return { 
           success: false, 
-          error: data.error || 'Login failed. Please try again.' 
+          error: error || 'Login failed. Please try again.' 
         };
       }
     } catch (error) {
@@ -130,29 +126,18 @@ function App() {
   const handleMessageSubmit = async (message) => {
     setIsLoadingData(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/tickets`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: message.content,
-          departmentHint: message.selectedDepartment
-        }),
-      });
+      const { success, ticket, error } = await submitMessage(message);
       
-      const data = await response.json();
-      
-      if (response.ok && data.success) {
+      if (success) {
         // Only update tickets state if we're in dashboard view
         if (isAuthenticated) {
-          setTickets(prevTickets => [...prevTickets, data.ticket]);
+          setTickets(prevTickets => [...prevTickets, ticket]);
         }
         return { success: true };
       } else {
         return { 
           success: false, 
-          error: data.error || 'Failed to submit message. Please try again.'
+          error: error || 'Failed to submit message. Please try again.'
         };
       }
     } catch (error) {
@@ -170,16 +155,9 @@ function App() {
   const handleResolveTicket = async (ticketId) => {
     setIsLoadingData(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/tickets/${ticketId}/resolve`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
+      const { success, error } = await resolveTicket(ticketId);
       
-      const data = await response.json();
-      
-      if (response.ok && data.success) {
+      if (success) {
         // Update the ticket in our local state
         setTickets(prevTickets =>
           prevTickets.map(ticket =>
@@ -190,7 +168,7 @@ function App() {
       } else {
         return {
           success: false,
-          error: data.error || 'Failed to resolve ticket. Please try again.'
+          error: error || 'Failed to resolve ticket. Please try again.'
         };
       }
     } catch (error) {
@@ -208,23 +186,15 @@ function App() {
   const handleAddDepartment = async (department) => {
     setIsLoadingData(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/departments`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(department),
-      });
+      const { success, department: newDepartment, error } = await addDepartment(department);
       
-      const data = await response.json();
-      
-      if (response.ok && data.success) {
-        setDepartments(prevDepartments => [...prevDepartments, data.department]);
+      if (success) {
+        setDepartments(prevDepartments => [...prevDepartments, newDepartment]);
         return { success: true };
       } else {
         return {
           success: false,
-          error: data.error || 'Failed to add department. Please try again.'
+          error: error || 'Failed to add department. Please try again.'
         };
       }
     } catch (error) {
@@ -242,27 +212,19 @@ function App() {
   const handleEditDepartment = async (updatedDepartment) => {
     setIsLoadingData(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/departments/${updatedDepartment.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedDepartment),
-      });
+      const { success, department: editedDepartment, error } = await editDepartment(updatedDepartment);
       
-      const data = await response.json();
-      
-      if (response.ok && data.success) {
+      if (success) {
         setDepartments(prevDepartments =>
           prevDepartments.map(dept =>
-            dept.id === updatedDepartment.id ? data.department : dept
+            dept.id === updatedDepartment.id ? editedDepartment : dept
           )
         );
         return { success: true };
       } else {
         return {
           success: false,
-          error: data.error || 'Failed to update department. Please try again.'
+          error: error || 'Failed to update department. Please try again.'
         };
       }
     } catch (error) {
@@ -280,13 +242,9 @@ function App() {
   const handleDeleteDepartment = async (departmentId) => {
     setIsLoadingData(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/departments/${departmentId}`, {
-        method: 'DELETE',
-      });
+      const { success, error } = await deleteDepartment(departmentId);
       
-      const data = await response.json();
-      
-      if (response.ok && data.success) {
+      if (success) {
         setDepartments(prevDepartments => 
           prevDepartments.filter(dept => dept.id !== departmentId)
         );
@@ -294,7 +252,7 @@ function App() {
       } else {
         return {
           success: false,
-          error: data.error || 'Failed to delete department. Please try again.'
+          error: error || 'Failed to delete department. Please try again.'
         };
       }
     } catch (error) {
