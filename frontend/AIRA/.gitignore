@@ -11,7 +11,12 @@ node_modules
 dist
 dist-ssr
 *.local
-
+# filepath: C:\IT\Smesters\th7_SMESTER\CPIT-405\AIRA\.gitignore
+# ... other ignore rules ...
+backend/ollama/ollama-webui/cache/
+__pycache__/
+*.pyc
+# ... other ignore rules ...
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
