@@ -29,14 +29,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/api/health")
+@app.get("/")
 def health_check(db: Session = Depends(get_db)):
-    try:
-        # Check database connection
-        db.execute("SELECT 1")
-        return {"status": "healthy", "database": "connected"}
-    except Exception as e:
-        return {"status": "unhealthy", "database": str(e)}
+    return {"status": "ok :)"}
 
 
 
@@ -46,18 +41,19 @@ def health_check(db: Session = Depends(get_db)):
 
 
 class TicketFormatRequest(BaseModel):
-    organization_id: str
     massage: str
 
+# async def create_item(ticket: Item, organization=Depends(verify_token)):
+
+
+
 @app.post("/send-ticket/")
-async def create_item(ticket: Item, organization=Depends(verify_token)):
-    organization_id = organization["oid"]
+async def create_item(ticket: TicketFormatRequest):
+    #organization_id = organization["oid"]
+    organization_id = 1
     result = Classification(ticket)
 
-    return {
-        "organization_id": organization_id,
-        "massage": ticket.massage,
-    }
+    return result
 
 
 
