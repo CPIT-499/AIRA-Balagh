@@ -5,7 +5,9 @@ from ..database import get_db
 from ..models.ticket import Ticket
 from ..models.department import Department
 from ..schemas.ticket import TicketCreate, TicketRead
+# Import both clients - you can choose which one to use
 from ..AI.ollama_client import classify_with_ollama
+from ..AI.qwen_client import classify_with_qwen
 
 router = APIRouter()
 
@@ -20,7 +22,11 @@ async def create_ticket(
                  .filter(Department.name == payload.selected_department)\
                  .first()
     else:
-        dept_name = await classify_with_ollama(payload.description)
+        # Get all department names for classification
+        departments = [d.name for d in db.query(Department).all()]
+        
+        # Use Qwen instead of ollama for classification
+        dept_name = await classify_with_qwen(payload.description, departments)
         dept = db.query(Department)\
                  .filter(Department.name == dept_name)\
                  .first()

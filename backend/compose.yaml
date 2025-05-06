@@ -1,42 +1,52 @@
-#command to run the yaml: docker compose -p aira_backend up -d
 services:
-  postgres:
-    image: postgres:latest
-    restart: always
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PW}
-      POSTGRES_DB: ${POSTGRES_DB}
-    volumes:
-      - aira_postgres_data:/var/lib/postgresql/data # Use the named volume
-      - ./sql:/docker-entrypoint-initdb.d # Mount the sql directory
-    ports:
-      - "5432:5432"
-
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_MAIL}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PW}
-    ports:
-      - "5050:80"
-    depends_on:
-      - postgres
-      
   fastapi:
     build: ./fastapi
-    restart: always
     ports:
-      - "8000:8000"
+      - "8002:8000"  # Changed from 8000:8000 to use port 8002 externally
     volumes:
       - ./fastapi:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    restart: always
     depends_on:
+      - ollama
       - postgres
     environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PW}@postgres:5432/${POSTGRES_DB}
-      - PORT=8000
+      - OLLAMA_API_BASE=http://ollama:11434
+    networks:
+      - ollama-docker
+
+  ollama:
+    image: docker.io/ollama/ollama:latest
+    ports:
+      - 11434:11434
+    volumes:
+      - ./ollama/ollama:/root/.ollama
+    container_name: ollama
+    pull_policy: always
+    tty: true
+    restart: always
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h
+      - OLLAMA_HOST=0.0.0.0
+    networks:
+      - ollama-docker
+
+  postgres:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: your_database_name
+      POSTGRES_USER: your_username
+      POSTGRES_PASSWORD: your_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - ollama-docker
+
+networks:
+  ollama-docker:
+    external: false
 
 volumes:
-  aira_postgres_data: # Define the named volume explicitly
-    name: aira # Optional: Explicitly set the volume name on the host
+  postgres_data:
