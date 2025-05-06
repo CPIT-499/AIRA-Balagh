@@ -1,0 +1,44 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+# filepath: C:\IT\Smesters\th7_SMESTER\CPIT-405\AIRA\.gitignore
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+.env
+.venv
+env/
+venv/
+
+# Ollama cache
+backend/ollama/ollama-webui/cache/
+
+# Other common ignores
+.DS_Store
+*.log
+node_modules/
+dist/
+build/
+.vscode/
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
