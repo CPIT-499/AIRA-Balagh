@@ -1,18 +1,27 @@
-import os
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+import os
+from dotenv import load_dotenv
 
-# Get the database URL from environment variables
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://admin:password@postgres:5432/aira_db")
+# Load environment variables
+load_dotenv()
 
-# Create the SQLAlchemy engine
-engine = create_engine(DATABASE_URL)
+# Get database connection string from environment variables
+DATABASE_URL="postgresql://AIRA:AIRA%40123@postgres:5432/postgres"
 
-# Create a SessionLocal class
+# Create engine with proper pool settings
+engine = create_engine(
+    DATABASE_URL,
+    pool_pre_ping=True,  # Helps detect disconnections
+    pool_recycle=3600,   # Recycle connections after 1 hour
+    echo=False           # Set to True for SQL logging during development
+)
+
+# Create session factory
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Create a Base class for declarative models
+# Base class for models
 Base = declarative_base()
 
 # Dependency to get DB session

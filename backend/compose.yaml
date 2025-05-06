@@ -2,7 +2,7 @@ services:
   fastapi:
     build: ./fastapi
     ports:
-      - "8002:8000"  # Changed from 8000:8000 to use port 8002 externally
+      - "8002:8000"
     volumes:
       - ./fastapi:/app
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
@@ -36,11 +36,28 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: your_database_name
-      POSTGRES_USER: your_username
-      POSTGRES_PASSWORD: your_password
+      POSTGRES_DB: postgres
+      POSTGRES_USER: AIRA
+      POSTGRES_PASSWORD: AIRA@123  
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./sql:/docker-entrypoint-initdb.d
+    networks:
+      - ollama-docker
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4_container
+    restart: always
+    ports:
+      - "8888:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: your-valid@email.com
+      PGADMIN_DEFAULT_PASSWORD: password
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      - postgres
     networks:
       - ollama-docker
 
@@ -50,3 +67,4 @@ networks:
 
 volumes:
   postgres_data:
+  pgadmin-data:

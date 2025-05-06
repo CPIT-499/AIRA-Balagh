@@ -2,7 +2,7 @@
 
 from sqlalchemy import Column, Integer, String, Text, TIMESTAMP, ForeignKey, func
 from sqlalchemy.orm import relationship
-from ..database import Base
+from database import Base  # Changed to absolute import
 
 class Ticket(Base):
     __tablename__ = "tickets"
@@ -15,6 +15,7 @@ class Ticket(Base):
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
     updated_at = Column(TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now())
     resolved_at = Column(TIMESTAMP(timezone=True), nullable=True)
+    organization_id = Column(Integer, ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False)
 
     reporter_uid = Column(String(128), ForeignKey("users.firebase_uid"), nullable=True)
     assigned_department_id = Column(Integer, ForeignKey("departments.id", ondelete="SET NULL"), nullable=True)

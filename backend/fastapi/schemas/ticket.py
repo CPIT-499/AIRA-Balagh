@@ -8,13 +8,18 @@ class TicketCreate(BaseModel):
     title: str
     description: str
     reporter_uid: str
-    selected_department: Optional[str] = None
+    assigned_department_id: Optional[int] = None
+    selected_department: str
 
-class TicketRead(TicketCreate):
+class TicketRead(BaseModel):
     id: int
+    title: str
+    description: str
     status: str
     priority: str
-    assigned_department_id: int
+    reporter_uid: str
+    assigned_department_id: Optional[int]
+    organization_id: int  # Add organization_id
 
     class Config:
         orm_mode = True
