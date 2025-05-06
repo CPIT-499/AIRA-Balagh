@@ -3,12 +3,14 @@ import asyncio
 import os
 import time
 from typing import Dict
+from models import ticket as ticket_model, department as department_model, user as user_model
 
 # LangChain imports
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_community.llms import Ollama
 from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
+from utilities import extract_organization_from_email
 
 
 class ClassificationResult(BaseModel):
@@ -19,6 +21,8 @@ class ClassificationResult(BaseModel):
 async def call_with_langchain(message: str, departments: dict) -> str:
     """
     Use LangChain to classify the message into a department
+
+    to set up ollama run this command: docker exec -it ollama ollama run llama3.2
     """
     try:
         # Create prompt template
@@ -65,14 +69,16 @@ async def call_with_langchain(message: str, departments: dict) -> str:
         return "Error"  # Default response on error
 
 
-async def Classification(ticket) -> ClassificationResult:
-    departments = {
-        "HR": "this department handles human resources",
-        "IT": "this department handles information technology",
-        "Finance": "this department handles financial matters",
-        "Marketing": "this department handles marketing and advertising"
-    }
+async def Classification(ticket, email ,db) -> ClassificationResult:
     
+    organization_id = extract_organization_from_email(email,db)
+    departments = db.query(department_model.Department).filter(
+        department_model.Department.organization_id == organization_id
+    ).all()
+
+    # Convert departments to a dictionary
+    departments = {dept.name: dept.description for dept in departments}
+
     # Call LangChain instead of direct API call
     result_string = await call_with_langchain(ticket.massage, departments)
     

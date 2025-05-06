@@ -10,6 +10,7 @@ class TicketCreate(BaseModel):
     reporter_uid: str
     assigned_department_id: Optional[int] = None
     selected_department: str
+    username: str  # Add this field
 
 class TicketRead(BaseModel):
     id: int

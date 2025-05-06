@@ -1,14 +1,23 @@
+import re
 from fastapi import FastAPI, Depends, HTTPException, Query, Header
-from fastapi.middleware.cors import CORSMiddleware  # Add this import
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from firebase_admin import auth
 from AIoperation.Classification import Classification
 from database import get_db
-from routers import tickets, organizations  # Import the tickets and organizations routers
+from routers import tickets, organizations
 from schemas.ticket import TicketCreate, TicketRead
 from sqlalchemy import text
-from util import extract_organization_id_from_email
+
+class TicketFormatRequest(BaseModel):
+    massage: str
+
+class TicketFormatInformation(BaseModel):
+    username: str
+    email: str
+    massage: str
+    title: str
 
 app = FastAPI(
     title="AIRA API",
@@ -16,11 +25,14 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# Configure CORS
 origins = [
-    "http://localhost",
     "http://localhost:3000",
-    "http://localhost:5173",  # Vite dev server default port
+    "http://localhost",
+    "http://localhost:8000",
+    "https://localhost:3000",
+    "https://localhost",
+    "https://localhost:8000",
+    "*"
 ]
 
 app.add_middleware(
@@ -32,60 +44,54 @@ app.add_middleware(
 )
 
 app.include_router(tickets.router, prefix="/tickets", tags=["tickets"])
-app.include_router(organizations.router, prefix="/organizations", tags=["organizations"])  # Include the organizations router
+app.include_router(organizations.router, prefix="/organizations", tags=["organizations"])
 
 @app.get("/")
 def health_check(db: Session = Depends(get_db)):
     return {"status": "ok :)"}
 
-class TicketFormatRequest(BaseModel):
-    massage: str
-
-class TicketFormatInformation(BaseModel):
-    massage: str
-    username: str
-    email: str
-    title: str
+@app.get("/test")
+async def test_db(db: Session = Depends(get_db)):
+    result = db.execute(text("SELECT 1")).scalar()
+    return {"result": result}
 
 @app.post("/send-ticket", response_model=TicketRead)
 async def create_item(
     title: str = Query(..., description="Short title describing the issue"),
-    massage: str = Query(..., description="Detailed description of the issue"), 
-    username: str = Query(..., description="Your name"), 
+    massage: str = Query(..., description="Detailed description of the issue"),
+    name: str = Query(..., description="Your name"),
     email: str = Query(..., description="Your email address"),
     db: Session = Depends(get_db)
 ):
-    print(f"New ticket: {title} - {username}")
     ticket_data = TicketFormatRequest(massage=massage)
-    deptName = await Classification(ticket_data)
+
+    classification_result = await Classification(ticket_data,email,db)
+    deptName = classification_result.category  # Extract the department name
+
     information = TicketFormatInformation(
-        username=username, 
-        email=email, 
-        massage=massage, 
+        username=name,
+        email=email,
+        massage=massage,
         title=title
     )
-    
+
+    # Validate email format
+    if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+        raise HTTPException(status_code=400, detail="Invalid email format")
+
     # Create a TicketCreate object
     ticket_create = TicketCreate(
         title=information.title,
         description=information.massage,
-        deptName=deptName,
+        reporter_uid=email,  # Pass the validated email
+        selected_department=deptName,  # Pass the department name
+        username=information.username  # Pass the username
     )
-    
-    # Call the create_ticket function from the tickets router
     try:
         new_ticket = await tickets.create_ticket(ticket_create, db)
         return new_ticket
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-@app.get("/test-db")
-def test_db(db: Session = Depends(get_db)):
-    try:
-        db.execute(text("SELECT 1"))  
-        return {"message": "Database connection successful"}
-    except Exception as e:
-        return {"error": str(e)}
 
 async def verify_token(authorization: str = Header(...)):
     try:

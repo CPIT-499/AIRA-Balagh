@@ -5,6 +5,10 @@ from models import ticket as ticket_model, department as department_model, user 
 from schemas import ticket as ticket_schema
 from AIoperation.Classification import Classification
 
+
+# Import the utility function
+from utilities import extract_organization_from_email
+
 router = APIRouter()
 
 @router.post("/", response_model=ticket_schema.TicketRead)
@@ -13,8 +17,10 @@ async def create_ticket(ticket: ticket_schema.TicketCreate, db: Session = Depend
     Create a new ticket.
     """
     try:
-        
-        dept_name = ticket.selected_department  # Assuming selected_department is the department name
+        # Extract organization ID from email
+        organization_id = extract_organization_from_email(ticket.reporter_uid, db)
+
+        dept_name = ticket.selected_department
         dept = db.query(department_model.Department).filter(
             department_model.Department.name == dept_name,
             department_model.Department.organization_id == organization_id
@@ -22,14 +28,14 @@ async def create_ticket(ticket: ticket_schema.TicketCreate, db: Session = Depend
         if not dept:
             raise HTTPException(status_code=404, detail="Department not found")
 
-        # 4. Create and save ticket
+        # Create and save ticket
         db_ticket = ticket_model.Ticket(
             title=ticket.title,
             description=ticket.description,
             reporter_uid=ticket.reporter_uid,
-            assigned_department_id=dept.id,  # Use the correct department ID
+            assigned_department_id=dept.id,
             organization_id=organization_id
-        )
+            )
         db.add(db_ticket)
         db.commit()
         db.refresh(db_ticket)
