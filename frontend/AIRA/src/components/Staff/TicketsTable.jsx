@@ -3,16 +3,16 @@ import './TicketsTable.css';
 import StatusBadge from '../Common/StatusBadge';
 import ActionButton from '../Common/ActionButton';
 
-function TicketsTable({ 
-  tickets = [], 
-  isLoading, 
-  departments = [], // Add departments prop with default empty array
+function TicketsTable({
+  tickets = [],
+  isLoading,
+  departments = [], // Ensure departments prop is received
   onResolve,
   filter,
   onFilterChange
 }) {
   const [expandedTicket, setExpandedTicket] = useState(null);
-  
+
   // Format date to readable string
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -23,6 +23,12 @@ function TicketsTable({
       hour: '2-digit',
       minute: '2-digit'
     });
+  };
+
+  // Helper function to get department name by ID
+  const getDepartmentNameById = (departmentId) => {
+    const department = departments.find(dept => dept.id === departmentId);
+    return department ? department.name : 'N/A'; // Return 'N/A' or ID if not found
   };
 
   // Handle search input change
@@ -61,8 +67,8 @@ function TicketsTable({
             />
           </div>
           <div className="department-filter">
-            <select 
-              value={filter.department} 
+            <select
+              value={filter.department}
               onChange={handleDepartmentChange}
               className="department-select"
             >
@@ -90,10 +96,11 @@ function TicketsTable({
             <thead>
               <tr>
                 <th>ID</th>
-                <th>Message</th>
+                <th>Title</th>
                 <th>Department</th>
                 <th>Date</th>
                 <th>Status</th>
+                <th>Message</th> {/* Changed from Massage to Message for clarity */}
                 <th>Actions</th>
               </tr>
             </thead>
@@ -101,28 +108,33 @@ function TicketsTable({
               {tickets.map((ticket) => (
                 <tr key={ticket.id} className={expandedTicket === ticket.id ? 'expanded' : ''}>
                   <td>{ticket.id}</td>
-                  <td className="message-cell">
-                    <div className={`message-content ${expandedTicket === ticket.id ? 'expanded' : ''}`}>
-                      {ticket.message}
-                    </div>
-                  </td>
-                  <td>{ticket.department}</td>
-                  <td>{formatDate(ticket.date)}</td>
+                  {/* Title cell */}
+                  <td>{ticket.title}</td> 
+                  
+                  <td>{getDepartmentNameById(ticket.assigned_department_id)}</td>
+                  
+                  <td>{formatDate(ticket.created_at)}</td> 
                   <td>
                     <StatusBadge status={ticket.status} />
                   </td>
+                  {/* Message cell for ticket.description */}
+                  <td className="message-cell">
+                    <div className={`message-content ${expandedTicket === ticket.id ? 'expanded' : ''}`}>
+                      {ticket.description} 
+                    </div>
+                  </td>
                   <td className="actions-cell">
                     <div className="action-buttons">
-                      <ActionButton 
+                      <ActionButton
                         text={expandedTicket === ticket.id ? "Hide" : "View"}
-                        type="secondary" 
-                        onClick={() => handleViewTicket(ticket.id)} 
+                        type="secondary"
+                        onClick={() => handleViewTicket(ticket.id)}
                       />
-                      {ticket.status === 'pending' && (
-                        <ActionButton 
-                          text="Resolve" 
-                          type="primary" 
-                          onClick={() => onResolve(ticket.id)} 
+                      {ticket.status === 'pending' && ( // Assuming 'open' tickets might be resolvable
+                        <ActionButton
+                          text="Resolve"
+                          type="primary"
+                          onClick={() => onResolve(ticket.id)}
                         />
                       )}
                     </div>

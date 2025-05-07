@@ -2,9 +2,11 @@ import { useState } from 'react';
 import ActionButton from '../Common/ActionButton';
 import './MessageForm.css';
 
-function MessageForm({ departments = [], onSubmit }) {
+function MessageForm({ onSubmit }) {
   const [content, setContent] = useState('');
-  const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [title, setTitle] = useState('');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [error, setError] = useState('');
@@ -20,11 +22,19 @@ function MessageForm({ departments = [], onSubmit }) {
     setError('');
     
     try {
-      const result = await onSubmit({ content, selectedDepartment });
+      const result = await onSubmit({
+        title,
+        massage: content,
+        name,
+        email
+      });
+      console.log('Message submission result:', result);
       if (result.success) {
         setSubmitSuccess(true);
         setContent('');
-        setSelectedDepartment('');
+        setTitle('');
+        setName('');
+        setEmail('');
         // Reset success message after 5 seconds
         setTimeout(() => {
           setSubmitSuccess(false);
@@ -58,9 +68,50 @@ function MessageForm({ departments = [], onSubmit }) {
           {error && <div className="form-error">{error}</div>}
           
           <div className="form-group">
+            <label htmlFor="title">Title</label>
+            <input
+              id="title"
+              name="title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Enter the title of your request"
+              required
+              className="form-input"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="name">Your Name</label>
+            <input
+              id="name"
+              name="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter your name"
+              required
+              className="form-input"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="email">Your Email</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              required
+              className="form-input"
+            />
+          </div>
+
+          <div className="form-group">
             <label htmlFor="message">Your Message</label>
             <textarea
               id="message"
+              name="massage"
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="Describe your request or issue..."
@@ -70,31 +121,11 @@ function MessageForm({ departments = [], onSubmit }) {
             />
           </div>
           
-          <div className="form-group">
-            <label htmlFor="department">Department (Optional)</label>
-            <select
-              id="department"
-              value={selectedDepartment}
-              onChange={(e) => setSelectedDepartment(e.target.value)}
-              className="department-select"
-            >
-              <option value="">Let AI determine</option>
-              {departments.map(dept => (
-                <option key={dept.id} value={dept.name}>
-                  {dept.name}
-                </option>
-              ))}
-            </select>
-            <p className="form-helper-text">
-              Leave blank to let our AI determine the appropriate department
-            </p>
-          </div>
-          
           <div className="form-actions">
             <ActionButton
+              htmlType="submit"
               text={isSubmitting ? "Submitting..." : "Submit Request"}
               type="primary"
-              onClick={() => {}}
               disabled={isSubmitting}
             />
           </div>

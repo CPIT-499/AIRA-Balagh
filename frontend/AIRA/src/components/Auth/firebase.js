@@ -2,14 +2,14 @@ import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyCgwIsRQCalJ2TInq0QgKd88ErZ28dWxJA",
-    authDomain: "aira-614da.firebaseapp.com",
-    projectId: "aira-614da",
-    storageBucket: "aira-614da.firebasestorage.app",
-    messagingSenderId: "553291867210",
-    appId: "1:553291867210:web:644131fe758eff7a50b2b3",
-    measurementId: "G-5S152JE4S0"
-  };
+  apiKey: "AIzaSyDhG4WsaT1tVf0O_iz65h5WovPfILGUNJU",
+  authDomain: "aira-88b57.firebaseapp.com",
+  projectId: "aira-88b57",
+  storageBucket: "aira-88b57.firebasestorage.app",
+  messagingSenderId: "560743507223",
+  appId: "1:560743507223:web:27d9e2754c60f7d79f8352",
+  measurementId: "G-30TSLSQKYY"
+};
   
 
 const app = initializeApp(firebaseConfig);

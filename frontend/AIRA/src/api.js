@@ -1,6 +1,6 @@
 // API logic for the AIRA frontend
 
-const API_BASE_URL = 'http://localhost:4000/api';
+const API_BASE_URL = 'http://localhost:8002';
 
 // Fetch tickets
 export const fetchTickets = async () => {
@@ -55,22 +55,30 @@ export const login = async (credentials) => {
 // Submit message
 export const submitMessage = async (message) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/tickets`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(message),
-    });
-    const data = await response.json();
-    if (response.ok && data.success) {
-      return data;
-    } else {
-      throw new Error(data.error || 'Failed to submit message');
+    const url = new URL(`${API_BASE_URL}/send-ticket`);
+    for (const [key, val] of Object.entries(message)) {
+      if (val != null) {
+        url.searchParams.append(key, val);
+      }
     }
+    const urlString = url.toString();
+    console.log('Submitting message to:', urlString);
+    const response = await fetch(urlString, { method: 'POST' });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.detail || 'Failed to submit message');
+    }
+    
+    // Add success property to match what the form component expects
+    const data = await response.json();
+    return { ...data, success: true };
   } catch (error) {
     console.error('Submit message error:', error);
     throw error;
   }
 };
+
 
 // Resolve ticket
 export const resolveTicket = async (ticketId) => {

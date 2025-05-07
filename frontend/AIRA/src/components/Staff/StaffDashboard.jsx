@@ -24,7 +24,7 @@ function StaffDashboard({
   // Filter tickets based on active tab and filter criteria
   const filteredTickets = tickets.filter(ticket => {
     // Filter by status based on active tab
-    if (activeTab === 'open' && ticket.status !== 'pending') return false;
+    if (activeTab === 'open' && ticket.status !== 'open') return false;
     if (activeTab === 'resolved' && ticket.status !== 'resolved') return false;
 
     // Apply search filter if present
