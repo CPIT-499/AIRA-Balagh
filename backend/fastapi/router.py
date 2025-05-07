@@ -1,11 +1,13 @@
-# backend/fastapi/router.py
-# Main router, e.g., for the AI classification endpoint
-
-from fastapi import APIRouter
-
+# router.py
+from fastapi import APIRouter, Depends
+from typing import Annotated
+from config.config import get_firebase_user_from_token
 router = APIRouter()
-
-# Add routes here, e.g.:
-# @router.post("/classify")
-# async def classify_ticket(...):
-#    ...
+@router.get("/")
+def hello():
+    """Hello world route to make sure the app is working correctly"""
+    return {"msg": "Hello World!"}
+@router.get("/userid")
+async def get_userid(user: Annotated[dict, Depends(get_firebase_user_from_token)]):
+    """gets the firebase connected user"""
+    return {"id": user["uid"]}

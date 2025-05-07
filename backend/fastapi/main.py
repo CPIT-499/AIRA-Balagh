@@ -3,12 +3,21 @@ from fastapi import FastAPI, Depends, HTTPException, Query, Header
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
-from firebase_admin import auth
+import firebase_admin
+from firebase_admin import credentials, auth
 from AIoperation.Classification import Classification
 from database import get_db
 from routers import tickets, organizations
 from schemas.ticket import TicketCreate, TicketRead
 from sqlalchemy import text
+from config.config import get_firebase_user_from_token
+from utilities import extract_organization_from_email
+from schemas.department import Department
+from models import Ticket, Department  # Make sure to import your ORM models
+
+# —––––––– Firebase initialization –––––––—
+cred = credentials.Certificate("config/firebase.json") # This path is relative to main.py
+firebase_admin.initialize_app(cred)
 
 class TicketFormatRequest(BaseModel):
     massage: str
@@ -24,6 +33,7 @@ app = FastAPI(
     description="AI Routing Assistant API",
     version="1.0.0",
 )
+
 
 origins = [
     "http://localhost:3000",
@@ -43,7 +53,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(tickets.router, prefix="/tickets", tags=["tickets"])
+app.include_router(
+    tickets.router,
+    prefix="/tickets",
+    tags=["tickets"]
+)
 app.include_router(organizations.router, prefix="/organizations", tags=["organizations"])
 
 @app.get("/")
@@ -54,6 +68,33 @@ def health_check(db: Session = Depends(get_db)):
 async def test_db(db: Session = Depends(get_db)):
     result = db.execute(text("SELECT 1")).scalar()
     return {"result": result}
+
+
+@app.get("/test-auth")
+async def test_auth_and_print_user(
+    user: dict = Depends(get_firebase_user_from_token), # Correct
+    db: Session = Depends(get_db),
+):
+    ticket_id: int = Query(..., description="Ticket ID to retrieve")
+
+
+@app.get("/tickets")
+async def get_tickets(db: Session = Depends(get_db)):
+    organization_id = extract_organization_from_email("demo@demo.com", db)
+    tickets = db.query(Ticket).filter(
+        Ticket.organization_id == organization_id
+    ).all()
+    print(tickets)
+    return tickets
+
+
+@app.get("/departments")
+async def get_department(db: Session = Depends(get_db)):
+    organization_id = extract_organization_from_email("demo@demo.com", db)
+    departments = db.query(Department).filter(Department.organization_id == organization_id).all()
+    print(departments)
+    return departments
+
 
 @app.post("/send-ticket", response_model=TicketRead)
 async def create_item(
@@ -83,7 +124,7 @@ async def create_item(
     ticket_create = TicketCreate(
         title=information.title,
         description=information.massage,
-        reporter_uid=email,  # Pass the validated email
+        userEmail=email,  # Pass the validated email
         selected_department=deptName,  # Pass the department name
         username=information.username  # Pass the username
     )

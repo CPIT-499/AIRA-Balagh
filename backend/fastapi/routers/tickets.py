@@ -18,7 +18,7 @@ async def create_ticket(ticket: ticket_schema.TicketCreate, db: Session = Depend
     """
     try:
         # Extract organization ID from email
-        organization_id = extract_organization_from_email(ticket.reporter_uid, db)
+        organization_id = extract_organization_from_email(ticket.userEmail, db)
 
         dept_name = ticket.selected_department
         dept = db.query(department_model.Department).filter(
@@ -32,10 +32,10 @@ async def create_ticket(ticket: ticket_schema.TicketCreate, db: Session = Depend
         db_ticket = ticket_model.Ticket(
             title=ticket.title,
             description=ticket.description,
-            reporter_uid=ticket.reporter_uid,
+            organization_id=organization_id,
             assigned_department_id=dept.id,
-            organization_id=organization_id
-            )
+            email=ticket.userEmail
+        )
         db.add(db_ticket)
         db.commit()
         db.refresh(db_ticket)

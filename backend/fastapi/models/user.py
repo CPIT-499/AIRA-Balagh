@@ -15,6 +15,5 @@ class User(Base):
     organization_id = Column(Integer, ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False)
 
     # Relationships
-    reported_tickets = relationship("Ticket", foreign_keys="[Ticket.reporter_uid]", back_populates="reporter")
     assigned_tickets = relationship("Ticket", foreign_keys="[Ticket.assigned_agent_uid]", back_populates="assigned_agent")
     organization = relationship("Organization", back_populates="users")
