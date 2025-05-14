@@ -4,4 +4,16 @@ In many companies, employees often need help from different departments, but the
  
 AIRA (AI Routing Assistant) LLM solves this problem. Employees can submit a message (a "ticket") through a website, and an AI agent reads the message, identifies the correct department using classification methods, and forwards the ticket accordingly. Department staff can then view and manage tickets through a dashboard.
  
-It’s like having a smart assistant that always knows who can solve your problem.
+It's like having a smart assistant that always knows who can solve your problem.
+
+## User Interface
+
+### Ticket Submission
+![Ticket Submission Form](aria-1.png)
+
+### Staff Login Screen
+![AIRA Login Screen](aria-2.png)
+
+### Staff Dashboard
+![Staff Dashboard](aria-3.png)
+
