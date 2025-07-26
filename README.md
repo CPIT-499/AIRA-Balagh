@@ -1,15 +1,27 @@
-# AIRA (AI Routing Assistant)
+# AIRA-Balagh (AI Routing Assistant for Saudi Arabia)
 
-In many companies, employees often need help from different departments, but they don't always know who to contact. For example, issues might relate to IT, HR, or Facilities, and it can be confusing to figure out the right point of contact.
- 
-AIRA (AI Routing Assistant) LLM solves this problem. Employees can submit a message (a "ticket") through a website, and an AI agent reads the message, identifies the correct department using classification methods, and forwards the ticket accordingly. Department staff can then view and manage tickets through a dashboard.
- 
-It's like having a smart assistant that always knows who can solve your problem.
+AIRA-Balagh is a localized smart routing platform designed for Saudi Arabia to simplify issue reporting for citizens. Whether it's public infrastructure problems, restaurant complaints, or accidents, AIRA-Balagh uses advanced AI to analyze submitted messages (tickets), classify them, and forward them to the appropriate authority for resolution. It ensures efficient communication and faster solutions by connecting citizens with the right departments or organizations.
+
+## Key Features
+
+### Universal Issue Reporting
+Citizens can submit complaints via text, images, or voice, allowing flexibility in how issues are reported.
+
+### Intelligent Routing
+Using classification methods, AIRA-Balagh identifies the nature of the issue and determines the correct department or organization to handle it.
+
+### Multimodal Input
+AIRA-Balagh supports text, image, and voice analysis to provide rich context for each ticket.
+
+### Real-Time Dashboard
+Authorities can view and manage tickets through an intuitive dashboard, enabling faster responses and better tracking of resolutions.
+
+---
 
 ## Form Validation
 
-I've implemented HTML form validation in the Login component as required for the project. Here's my submission with the key code snippets:
- 
+HTML form validation is implemented in the Login component to ensure user inputs are correctly formatted and secured.
+
 ### login.jsx
 
 ```jsx
@@ -25,9 +37,9 @@ I've implemented HTML form validation in the Login component as required for the
 ```
 
 ### Email Type Validation
- 
-The input has type="email" which provides built-in format validation:
- 
+
+The input field uses type="email" for built-in format validation:
+
 ```jsx
 <input
   id="email"
@@ -37,15 +49,15 @@ The input has type="email" which provides built-in format validation:
 ```
 
 ### Form Submission Handling
- 
-I've implemented a form submission handler with validation:
- 
+
+The submission handler ensures proper validation and error handling:
+
 ```jsx
 const handleSubmit = async (e) => {
   e.preventDefault();
   setError('');
   setIsLoading(true);
- 
+
   try {
     await login(email, password);
     navigate('/dashboard');
@@ -58,6 +70,8 @@ const handleSubmit = async (e) => {
 };
 ```
 
+---
+
 ## User Interface
 
 ### Ticket Submission
@@ -68,4 +82,3 @@ const handleSubmit = async (e) => {
 
 ### Staff Dashboard
 ![Staff Dashboard](aria-3.png)
-
